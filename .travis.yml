@@ -1,0 +1,35 @@
+language: python
+python:
+  - "2.7"
+
+before_install:
+  - cd ..
+  # Install miniconda
+  - wget http://repo.continuum.io/miniconda/Miniconda2-latest-Linux-x86_64.sh -O miniconda.sh
+  - bash miniconda.sh -b -p $HOME/miniconda
+  - export PATH=$HOME/miniconda/bin:$PATH
+  - conda update --yes conda
+  - conda info -a
+  # Clone RMG-Py
+  - git clone https://github.com/ReactionMechanismGenerator/RMG-Py.git
+  - cd RMG-Py
+  - git checkout $TRAVIS_BRANCH
+  - cd ../
+  # Clone RMG-database
+  - git clone https://github.com/ReactionMechanismGenerator/RMG-database.git
+  - cd RMG-database
+  - git checkout $TRAVIS_BRANCH
+  - cd ../
+
+install:
+  - cd RMG-Py
+  - conda env create -q -f environment_linux.yml
+  - source activate rmg_env
+  - conda list
+  - yes 'Yes' | $HOME/miniconda/envs/rmg_env/bin/mopac $MOPACKEY > /dev/null
+  - make
+
+script: 
+  - make test-unittests
+  - make test-functional
+  - make test-database
