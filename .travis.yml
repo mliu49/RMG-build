@@ -2,6 +2,17 @@ language: python
 python:
   - "2.7"
 
+os:
+  - linux
+  - osx
+
+env:
+  global:
+    - RMGPY_REPO='https://github.com/ReactionMechanismGenerator/RMG-Py.git'
+    - RMGDB_REPO='https://github.com/ReactionMechanismGenerator/RMG-database.git'
+    - RMGPY_TAG='stable'
+    - RMGDB_TAG='stable'
+
 before_install:
   - cd ..
   # Install miniconda
@@ -11,14 +22,14 @@ before_install:
   - conda update --yes conda
   - conda info -a
   # Clone RMG-Py
-  - git clone https://github.com/ReactionMechanismGenerator/RMG-Py.git
+  - git clone $RMGPY_REPO
   - cd RMG-Py
-  - git checkout $TRAVIS_BRANCH
+  - git checkout $RMGPY_TAG
   - cd ../
   # Clone RMG-database
-  - git clone https://github.com/ReactionMechanismGenerator/RMG-database.git
+  - git clone $RMGDB_REPO
   - cd RMG-database
-  - git checkout $TRAVIS_BRANCH
+  - git checkout $RMGDB_TAG
   - cd ../
 
 install:
@@ -29,7 +40,17 @@ install:
   - yes 'Yes' | $HOME/miniconda/envs/rmg_env/bin/mopac $MOPACKEY > /dev/null
   - make
 
-script: 
+script:
   - make test-unittests
   - make test-functional
   - make test-database
+
+after_success:
+  - make clean
+  - source deactivate
+  - cd ../
+  - conda install -y conda-build
+  - conda config --add channels rmg
+  - conda build RMG-database
+  - conda build RMG-Py
+
