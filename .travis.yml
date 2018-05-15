@@ -20,40 +20,19 @@ before_install:
   - export PATH=$HOME/miniconda/bin:$PATH
   - conda update --yes conda
   - conda info -a
-  # Clone RMG-Py
-  - git clone $RMGPY_REPO
-  - cd RMG-Py
-  - git checkout $RMGPY_TAG
-  - cd ../
-  # Clone RMG-database
-  - git clone $RMGDB_REPO
-  - cd RMG-database
-  - git checkout $RMGDB_TAG
-  - cd ../
 
 install:
-#  - cd RMG-Py
-#  - conda env create -q -f environment_linux.yml
-#  - source activate rmg_env
-#  - conda list
-#  - yes 'Yes' | $HOME/miniconda/envs/rmg_env/bin/mopac $MOPACKEY > /dev/null
-#  - make
-  - echo 'Skipping install'
-
-script:
-#  - make test-unittests
-#  - make test-functional
-#  - make test-database
-  - echo 'Skipping tests'
-
-after_success:
-#  - make clean
-#  - source deactivate
-#  - cd ../
+  # Clone RMG-Py
+  - git clone -b $RMGPY_TAG $RMGPY_REPO
+  # Clone RMG-database
+  - git clone -b $RMGDB_TAG $RMGDB_REPO
+  # Setup conda build
   - conda install -y conda-build
   - conda install -y anaconda-client
   - conda config --add channels rmg
   - conda config --set anaconda_upload yes
+
+script:
   - conda build --token $CONDA_UPLOAD_TOKEN --user rmg RMG-database
   - conda build --token $CONDA_UPLOAD_TOKEN --user rmg RMG-Py
 
