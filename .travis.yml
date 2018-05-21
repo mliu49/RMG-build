@@ -8,7 +8,7 @@ env:
   global:
     - RMGPY_REPO='https://github.com/ReactionMechanismGenerator/RMG-Py.git'
     - RMGDB_REPO='https://github.com/ReactionMechanismGenerator/RMG-database.git'
-    - RMGPY_TAG='stable'
+    - RMGPY_TAG='build_fixes'
     - RMGDB_TAG='stable'
 
 before_install:
